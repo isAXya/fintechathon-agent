@@ -8,11 +8,17 @@
 
 ## 一、三十秒跑起来
 
+Windows 上直接双击项目根目录的 `启动演示.cmd`，它会起服务并打开浏览器。
+
+命令行方式（macOS / Linux / Windows 通用）：
+
 ```bash
 # Node 18 及以上，不需要 npm install，没有任何第三方依赖
 node server.js
 # 打开 http://localhost:5173
 ```
+
+不要直接双击 `index.html`：`file://` 协议下浏览器会拦掉 ES Module，页面会白屏，属于预期行为。
 
 跑测试：
 

@@ -47,5 +47,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`语行演示环境已启动：http://localhost:${port}`);
+  console.log(`YUXING demo ready: http://localhost:${port}`);
 });

@@ -6,6 +6,29 @@
 <title>语行 · 银行 AI 智能体</title>
 <meta name="description" content="2026 深圳国际金融科技大赛 · 人工智能赛道参赛作品演示环境" />
 <link rel="stylesheet" href="assets/style.css" />
+<script>
+/* 直接双击 index.html 时，浏览器会拦掉 ES Module，页面一片空白。
+   这里提前给出提示，避免评审以为作品坏了。 */
+if (location.protocol === 'file:') {
+  document.addEventListener('DOMContentLoaded', function () {
+    var tip = document.createElement('div');
+    tip.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f5f7f8;font-family:-apple-system,"Microsoft YaHei",sans-serif;color:#10171f';
+    tip.innerHTML = '<div style="max-width:520px;padding:36px 40px;background:#fff;border:1px solid #e6eaee;border-radius:16px;box-shadow:0 20px 60px -30px rgba(16,23,31,.4)">'
+      + '<div style="font-size:12px;letter-spacing:.16em;color:#b8904f">YUXING · 启动方式</div>'
+      + '<h1 style="margin:10px 0 8px;font-size:22px">需要用本地服务打开</h1>'
+      + '<p style="margin:0 0 10px;font-size:14px;line-height:1.7;color:#2b3542">浏览器不允许 <code>file://</code> 协议加载 ES Module，所以直接双击 HTML 会白屏。这不是文件损坏。</p>'
+      + '<p style="margin:0 0 6px;font-size:13px;color:#6c7a8b">二选一：</p>'
+      + '<ol style="margin:0 0 14px;padding-left:20px;font-size:13.5px;line-height:1.9;color:#2b3542">'
+      + '<li>双击上一级目录的 <b>启动演示.cmd</b>，它会自动起服务并打开浏览器</li>'
+      + '<li>在这个目录执行 <code>node server.js</code>，再访问 <code>http://localhost:5173</code></li>'
+      + '</ol>'
+      + '<p style="margin:0;font-size:12px;color:#97a2b0">需要 Node.js 18 以上，无需安装任何依赖。</p>'
+      + '</div>';
+    document.body.appendChild(tip);
+  });
+}
+</script>
+
 </head>
 <body>
 <div class="shell">
