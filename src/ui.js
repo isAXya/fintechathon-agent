@@ -305,6 +305,24 @@ export function planCard(nodes) {
   return card;
 }
 
+/* ---------------- 计划摘要 ---------------- */
+export function planSummaryCard(facts, steps) {
+  const card = cardShell();
+  card.appendChild(head('已编排并执行', `${steps} 个节点`, 'amber'));
+  const list = [];
+  if (Number.isFinite(facts.reserve)) list.push(['冻结专款', `¥${money(facts.reserve)}`]);
+  if (Number.isFinite(facts.totalCost)) list.push(['礼品合计', `¥${money(facts.totalCost)}`]);
+  const person = facts.person || facts.reminderPerson;
+  if (person) list.push(['对象', person]);
+  if (facts.orderDate) list.push(['送达日期', facts.orderDate]);
+  if (Array.isArray(facts.items) && facts.items.length) {
+    list.push(['礼品', facts.items.map((it) => (typeof it === 'string' ? it : `${it.name} ¥${money(it.price !== undefined ? it.price : it.amount)}`)).join(' / ')]);
+  }
+  card.appendChild(rows(list));
+  card.appendChild(foot('关键节点确认后自动完成', '完整过程见「查看过程」'));
+  return card;
+}
+
 /* ---------------- 拦截 ---------------- */
 export function blockedCard(hit) {
   const card = cardShell('blocked');
@@ -327,22 +345,42 @@ export function blockedCard(hit) {
 
 /* ---------------- 通用消息 ---------------- */
 export function message(role, content = {}) {
-  const wrap = el('div', `msg msg-${role}`);
-  const meta = el('div', 'msg-meta');
-  meta.appendChild(el('span', 'who', role === 'user' ? '陈默' : '语行'));
-  meta.appendChild(el('span', '', content.time || clock()));
+  if (role === 'user') {
+    const wrap = el('div', 'msg user');
+    wrap.appendChild(el('p', 'say', content.text || ''));
+    return wrap;
+  }
+
+  const wrap = el('div', 'msg agent');
+  const meta = el('div', 'meta');
+  meta.appendChild(el('span', 'who', '语行'));
+  meta.appendChild(el('time', '', content.time || clock()));
   wrap.appendChild(meta);
 
-  if (content.text) {
-    wrap.appendChild(el('div', 'bubble', content.text));
-  }
-  if (content.card) {
-    wrap.appendChild(content.card);
-  }
-  if (content.note) {
-    wrap.appendChild(el('div', 'card-foot', content.note));
-  }
+  if (content.text) wrap.appendChild(el('p', 'say', content.text));
+  if (content.card) wrap.appendChild(content.card);
+  if (content.note) wrap.appendChild(el('p', 'note', content.note));
   return wrap;
+}
+
+export function traceLink({ steps, score, onClick }) {
+  const btn = el('button', 'trace-link');
+  btn.type = 'button';
+  btn.appendChild(el('span', '', `执行 ${steps} 步`));
+  btn.appendChild(el('span', 'sep'));
+  btn.appendChild(el('span', '', Number.isFinite(score) ? `风险 ${score}` : '风险 0'));
+  btn.appendChild(el('span', 'sep'));
+  btn.appendChild(el('span', '', '查看过程'));
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M9 6l6 6-6 6');
+  svg.appendChild(path);
+  btn.appendChild(svg);
+
+  btn.addEventListener('click', onClick);
+  return btn;
 }
 
 export function cardFor(action, data, extra) {
