@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="880" viewBox="0 0 1400 880">
+  <rect width="1400" height="880" fill="#ffffff"/>
+  <text x="60" y="46" font-family="Microsoft YaHei, sans-serif" font-size="24" font-weight="600" fill="#17202e">语行 · 系统总体架构</text>
+  <text x="60" y="74" font-family="Microsoft YaHei, sans-serif" font-size="15" fill="#66748a">请求自下而上逐层收窄：先判能不能办，再判谁来确认</text>
+
+  <!-- layer bands -->
+  <g font-family="Microsoft YaHei, sans-serif">
+    <rect x="60" y="100" width="960" height="96" rx="10" fill="#f4f7fb" stroke="#d8e0ec"/>
+    <text x="80" y="132" font-size="15" fill="#66748a">渠道层</text>
+
+    <rect x="60" y="218" width="960" height="96" rx="10" fill="#f4f7fb" stroke="#d8e0ec"/>
+    <text x="80" y="250" font-size="15" fill="#66748a">接入层</text>
+
+    <rect x="60" y="336" width="960" height="96" rx="10" fill="#f4f7fb" stroke="#d8e0ec"/>
+    <text x="80" y="368" font-size="15" fill="#66748a">理解层</text>
+
+    <rect x="60" y="454" width="960" height="118" rx="10" fill="#eef4fc" stroke="#c9d8ec"/>
+    <text x="80" y="486" font-size="15" fill="#66748a">编排层</text>
+
+    <rect x="60" y="594" width="960" height="96" rx="10" fill="#f4f7fb" stroke="#d8e0ec"/>
+    <text x="80" y="626" font-size="15" fill="#66748a">执行层</text>
+
+    <rect x="60" y="712" width="960" height="120" rx="10" fill="#f7f7f4" stroke="#e0ded2"/>
+    <text x="80" y="744" font-size="15" fill="#66748a">银行核心（模拟）</text>
+  </g>
+
+  <!-- boxes -->
+  <g font-family="Microsoft YaHei, sans-serif" text-anchor="middle">
+    <!-- L1 -->
+    <rect x="190" y="120" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="305" y="146" font-size="17" fill="#17202e">手机银行 APP</text>
+    <text x="305" y="166" font-size="13" fill="#66748a">对话式入口</text>
+
+    <rect x="450" y="120" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="565" y="146" font-size="17" fill="#17202e">微信 / IM</text>
+    <text x="565" y="166" font-size="13" fill="#66748a">消息通道</text>
+
+    <rect x="710" y="120" width="230" height="56" rx="8" fill="#e9eef6" stroke="#b9c6d8" stroke-dasharray="4 3"/>
+    <text x="825" y="146" font-size="17" fill="#66748a">语音入口</text>
+    <text x="825" y="166" font-size="13" fill="#8b97a9">二期规划</text>
+
+    <!-- L2 -->
+    <rect x="190" y="238" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="305" y="264" font-size="17" fill="#17202e">会话管理</text>
+    <text x="305" y="284" font-size="13" fill="#66748a">身份、上下文</text>
+
+    <rect x="450" y="238" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="565" y="264" font-size="17" fill="#17202e">注入扫描</text>
+    <text x="565" y="284" font-size="13" fill="#66748a">9 类规则 + 不可见字符</text>
+
+    <rect x="710" y="238" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="825" y="264" font-size="17" fill="#17202e">限流与熔断</text>
+    <text x="825" y="284" font-size="13" fill="#66748a">失败 3 次 / 拦截 5 次</text>
+
+    <!-- L3 -->
+    <rect x="190" y="356" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="305" y="382" font-size="17" fill="#17202e">规则 NLU</text>
+    <text x="305" y="402" font-size="13" fill="#66748a">意图 + 槽位</text>
+
+    <rect x="450" y="356" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="565" y="382" font-size="17" fill="#17202e">置信度判定</text>
+    <text x="565" y="402" font-size="13" fill="#66748a">低于阈值才外溢</text>
+
+    <rect x="710" y="356" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="825" y="382" font-size="17" fill="#17202e">大模型兜底</text>
+    <text x="825" y="402" font-size="13" fill="#66748a">白名单 JSON，可关闭</text>
+
+    <!-- L4 -->
+    <rect x="190" y="486" width="230" height="66" rx="8" fill="#ffffff" stroke="#9fb6d4"/>
+    <text x="305" y="512" font-size="17" fill="#17202e">任务 DAG 构建</text>
+    <text x="305" y="534" font-size="13" fill="#66748a">读并行、写串行</text>
+
+    <rect x="450" y="486" width="230" height="66" rx="8" fill="#ffffff" stroke="#9fb6d4"/>
+    <text x="565" y="512" font-size="17" fill="#17202e">权限决策</text>
+    <text x="565" y="534" font-size="13" fill="#66748a">策略表 + 风险评分</text>
+
+    <rect x="710" y="486" width="230" height="66" rx="8" fill="#ffffff" stroke="#9fb6d4"/>
+    <text x="825" y="512" font-size="17" fill="#17202e">确认 / 强验证</text>
+    <text x="825" y="534" font-size="13" fill="#66748a">黄色确认、红色多因子</text>
+
+    <!-- L5 -->
+    <rect x="190" y="614" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="305" y="640" font-size="17" fill="#17202e">动作注册表</text>
+    <text x="305" y="660" font-size="13" fill="#66748a">22 个受控动作</text>
+
+    <rect x="450" y="614" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="565" y="640" font-size="17" fill="#17202e">补偿回滚</text>
+    <text x="565" y="660" font-size="13" fill="#66748a">逆序撤销已执行节点</text>
+
+    <rect x="710" y="614" width="230" height="56" rx="8" fill="#ffffff" stroke="#b9c6d8"/>
+    <text x="825" y="640" font-size="17" fill="#17202e">审计写入</text>
+    <text x="825" y="660" font-size="13" fill="#66748a">SHA-256 哈希链</text>
+
+    <!-- L6 -->
+    <rect x="190" y="732" width="150" height="80" rx="8" fill="#ffffff" stroke="#d5d2c4"/>
+    <text x="265" y="766" font-size="16" fill="#17202e">账户</text>
+    <text x="265" y="788" font-size="12" fill="#66748a">活期 / 冻结</text>
+
+    <rect x="356" y="732" width="150" height="80" rx="8" fill="#ffffff" stroke="#d5d2c4"/>
+    <text x="431" y="766" font-size="16" fill="#17202e">卡片</text>
+    <text x="431" y="788" font-size="12" fill="#66748a">额度 / 状态</text>
+
+    <rect x="522" y="732" width="150" height="80" rx="8" fill="#ffffff" stroke="#d5d2c4"/>
+    <text x="597" y="766" font-size="16" fill="#17202e">理财</text>
+    <text x="597" y="788" font-size="12" fill="#66748a">申购 / 赎回</text>
+
+    <rect x="688" y="732" width="150" height="80" rx="8" fill="#ffffff" stroke="#d5d2c4"/>
+    <text x="763" y="766" font-size="16" fill="#17202e">订阅</text>
+    <text x="763" y="788" font-size="12" fill="#66748a">扣费 / 取消</text>
+
+    <rect x="854" y="732" width="150" height="80" rx="8" fill="#ffffff" stroke="#d5d2c4"/>
+    <text x="929" y="766" font-size="16" fill="#17202e">转账</text>
+    <text x="929" y="788" font-size="12" fill="#66748a">凭证 / 撤销</text>
+  </g>
+
+  <!-- arrows -->
+  <g stroke="#8b97a9" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+    <path d="M565 176 L565 232"/>
+    <path d="M565 294 L565 350"/>
+    <path d="M565 412 L565 480"/>
+    <path d="M565 552 L565 608"/>
+    <path d="M565 670 L565 706"/>
+  </g>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#8b97a9" stroke-width="1.6" stroke-linecap="round"/>
+    </marker>
+  </defs>
+
+  <!-- side rail -->
+  <g font-family="Microsoft YaHei, sans-serif">
+    <rect x="1060" y="100" width="280" height="732" rx="12" fill="#fbf7f0" stroke="#e6dcc8"/>
+    <text x="1084" y="136" font-size="16" font-weight="600" fill="#8a5a12">安全与合规（横切）</text>
+    <text x="1084" y="162" font-size="12.5" fill="#8a6a3a">不单独成层，嵌入每一层</text>
+
+    <rect x="1084" y="186" width="232" height="104" rx="8" fill="#ffffff" stroke="#e0d3b8"/>
+    <text x="1100" y="214" font-size="15" fill="#17202e">审计链</text>
+    <text x="1100" y="238" font-size="12.5" fill="#66748a">每个节点、每次确认、</text>
+    <text x="1100" y="258" font-size="12.5" fill="#66748a">每次拦截都入链</text>
+    <text x="1100" y="278" font-size="12" fill="#8b97a9">可校验 · 可导出</text>
+
+    <rect x="1084" y="306" width="232" height="104" rx="8" fill="#ffffff" stroke="#e0d3b8"/>
+    <text x="1100" y="334" font-size="15" fill="#17202e">权限策略表</text>
+    <text x="1100" y="358" font-size="12.5" fill="#66748a">动作下限写死，</text>
+    <text x="1100" y="378" font-size="12.5" fill="#66748a">评分只抬不降</text>
+    <text x="1100" y="398" font-size="12" fill="#8b97a9">对话改不了档位</text>
+
+    <rect x="1084" y="426" width="232" height="104" rx="8" fill="#ffffff" stroke="#e0d3b8"/>
+    <text x="1100" y="454" font-size="15" fill="#17202e">数字溯源</text>
+    <text x="1100" y="478" font-size="12.5" fill="#66748a">回复里的数字</text>
+    <text x="1100" y="498" font-size="12.5" fill="#66748a">必须能对上返回数据</text>
+    <text x="1100" y="518" font-size="12" fill="#8b97a9">对不上就删</text>
+
+    <rect x="1084" y="546" width="232" height="104" rx="8" fill="#ffffff" stroke="#e0d3b8"/>
+    <text x="1100" y="574" font-size="15" fill="#17202e">异常熔断</text>
+    <text x="1100" y="598" font-size="12.5" fill="#66748a">连续失败或可疑行为</text>
+    <text x="1100" y="618" font-size="12.5" fill="#66748a">锁会话 10 分钟</text>
+    <text x="1100" y="638" font-size="12" fill="#8b97a9">锁定期拒绝资金指令</text>
+
+    <rect x="1084" y="666" width="232" height="104" rx="8" fill="#ffffff" stroke="#e0d3b8"/>
+    <text x="1100" y="694" font-size="15" fill="#17202e">沙箱边界</text>
+    <text x="1100" y="718" font-size="12.5" fill="#66748a">只执行注册表内动作，</text>
+    <text x="1100" y="738" font-size="12.5" fill="#66748a">用户语句不进执行器</text>
+    <text x="1100" y="758" font-size="12" fill="#8b97a9">无动态代码执行</text>
+  </g>
+</svg>
