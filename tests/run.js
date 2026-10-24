@@ -119,6 +119,27 @@ ok('生日计划 4 个节点全部执行', resC.ok === true && resC.results.leng
 ok('专项款被冻结', bankC.state.frozen === 1000);
 ok('生成预约任务', bankC.state.scheduled.length >= 1);
 
+group('多轮上下文');
+const lastTransfer = { action: 'transfer.execute', slots: { payee: '王琪', amount: 800, note: '聚餐' } };
+const ctx1 = parse('再转 200', { last: lastTransfer });
+ok('"再转 200" 继承收款人', ctx1.intents[0].slots.payee === '王琪' && ctx1.intents[0].slots.amount === 200);
+const ctx2 = parse('改成 500', { last: lastTransfer });
+ok('"改成 500" 只改金额', ctx2.intents[0].slots.amount === 500 && ctx2.intents[0].slots.payee === '王琪');
+ok('补全结果有标记', ctx2.fromContext === true);
+const ctx3 = parse('她', { last: lastTransfer });
+ok('代词指向上一位收款人', ctx3.intents[0].slots.payee === '王琪');
+
+group('经营洞察');
+const bankD = createBank(createSeed(new Date('2026-10-24T10:00:00')));
+const insight = bankD.subscriptionInsight();
+ok('识别出涨价订阅', insight.changes.length === 1 && insight.changes[0].pct > 0);
+ok('识别出重复订阅', insight.duplicates.some((d) => d.category === '云存储'));
+const budget = bankD.budgetInsight(20000);
+ok('预算测算给出剩余额度', Math.abs(budget.remaining - (20000 - budget.spent)) < 0.01);
+ok('预算测算给出日均可用', budget.dailyAllowance > 0);
+const bp = parse('这个月预算还剩多少');
+ok('预算意图被识别', bp.intents[0].action === 'budget.insight');
+
 console.log(`\n通过 ${passed} 项，失败 ${failed} 项`);
 if (failed) {
   console.log('失败用例：' + failures.join('；'));

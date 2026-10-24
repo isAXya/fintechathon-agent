@@ -124,6 +124,21 @@ async function runSubScan(bank) {
   return { ok: true, data, summary: `识别到 ${data.count} 项订阅，每月固定支出 ${data.monthly.toFixed(2)} 元` };
 }
 
+async function runBudget(bank, params) {
+  const data = bank.budgetInsight(params.budget);
+  return {
+    ok: true,
+    data,
+    summary: `本月已花 ${data.spent.toFixed(2)} 元，剩余 ${data.remaining.toFixed(2)} 元，日均可用 ${data.dailyAllowance.toFixed(2)} 元`
+  };
+}
+
+async function runSubInsight(bank) {
+  const data = bank.subscriptionInsight();
+  const tip = data.changes.length ? `，${data.changes.length} 项涨价` : '';
+  return { ok: true, data, summary: `订阅 ${data.count} 项，每月 ${data.monthly.toFixed(2)} 元${tip}` };
+}
+
 async function runRecommend(bank, params) {
   const data = bank.recommendWealth(params.amount);
   return { ok: true, data, summary: `按 ${data.amount || 0} 元额度筛出 ${data.products.length} 只产品` };
@@ -176,6 +191,8 @@ const HANDLERS = {
   'wealth.recommend': (bank, p) => runRecommend(bank, p),
   'wealth.assess': (bank) => runAssess(bank),
   'sub.scan': (bank) => runSubScan(bank),
+  'sub.insight': (bank) => runSubInsight(bank),
+  'budget.insight': (bank, p) => runBudget(bank, p),
   'sub.cancel': (bank, p) => runCancelSub(bank, p),
   'card.apply': (bank) => runCardApply(bank),
   'card.limit': (bank, p) => runCardLimit(bank, p),

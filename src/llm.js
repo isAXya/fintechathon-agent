@@ -125,6 +125,18 @@ export function compose(action, data) {
     case 'sub.scan':
       return `识别到 ${data.count} 项订阅，每月固定扣 ${NUMBER(data.monthly)} 元。\n` +
         data.items.map((s) => `${s.name} ${NUMBER(s.amount)} 元/${s.cycle}，下次扣费 ${s.next}`).join('\n');
+    case 'sub.insight': {
+      const lines = [];
+      if (data.changes.length) {
+        lines.push(data.changes.map((c) => `${c.name} 从 ${NUMBER(c.from)} 元涨到 ${NUMBER(c.to)} 元，涨幅 ${c.pct}%`).join('\n'));
+      }
+      if (data.duplicates.length) {
+        lines.push(data.duplicates.map((d) => `${d.category}类有 ${d.items.length} 项重复：${d.items.map((i) => i.name).join('、')}，每月 ${NUMBER(d.monthly)} 元`).join('\n'));
+      }
+      return `共 ${data.count} 项订阅，每月固定支出 ${NUMBER(data.monthly)} 元，全年 ${NUMBER(data.yearly)} 元。\n${lines.join('\n')}`;
+    }
+    case 'budget.insight':
+      return `本月预算 ${NUMBER(data.budget)} 元，已花 ${NUMBER(data.spent)} 元，剩余 ${NUMBER(data.remaining)} 元，还能覆盖 ${data.daysLeft} 天，日均可用 ${NUMBER(data.dailyAllowance)} 元。按当前节奏月底将花到 ${NUMBER(data.projected)} 元。`;
     case 'sub.cancel':
       return `已取消《${data.item.name}》，每月少支出 ${NUMBER(data.item.amount)} 元，剩余 ${data.remain} 项订阅。`;
     case 'card.apply':

@@ -12,6 +12,8 @@ const READ_ACTIONS = new Set([
   'wealth.recommend',
   'wealth.assess',
   'sub.scan',
+  'sub.insight',
+  'budget.insight',
   'plan.resolve'
 ]);
 

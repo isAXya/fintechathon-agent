@@ -2,6 +2,8 @@
 // 银行场景里"少一次误判"比"多一种说法"更值钱，规则层可解释、可回归测试、断网也能跑。
 // 大模型只在规则置信度不足时兜底，见 llm.js。
 
+import { resolveFollowUp } from './context.js';
+
 const DIGITS = { 零: 0, 〇: 0, 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
 const UNITS = { 十: 10, 百: 100, 千: 1000 };
 
@@ -171,6 +173,20 @@ const RULES = [
     evidence: '命中"申请虚拟卡"'
   },
   {
+    action: 'budget.insight',
+    test: (t) => /(预算|还能花|还能用|剩多少|超支|这个月还剩)/.test(t),
+    confidence: 0.89,
+    slots: (t) => ({ budget: findAmount(t) }),
+    evidence: '命中"预算/还能花多少"'
+  },
+  {
+    action: 'sub.insight',
+    test: (t) => /(涨价|提价|变贵|重复扣费|重复订阅|多扣|扣了两次|扣两遍)/.test(t),
+    confidence: 0.9,
+    slots: () => ({}),
+    evidence: '命中"涨价/重复扣费"'
+  },
+  {
     action: 'sub.cancel',
     test: (t) => /(取消|关闭|退订|停掉)/.test(t) && /(订阅|会员|续费|扣费|包月|健身|视频|音乐|云盘|网盘)/.test(t),
     confidence: 0.92,
@@ -277,6 +293,12 @@ const REQUIRED_SLOTS = {
 
 const SLOT_LABEL = { payee: '收款人', amount: '金额', day: '每月几号' };
 
+// "预算 1000""备注聚餐"这类片段是补充信息，不单独成意图
+function isSupplement(text) {
+  const t = String(text).trim();
+  return /^(预算|金额|备注|日期|时间|收款人|对象|用途)[：:\s]?/.test(t) && t.length <= 16;
+}
+
 function splitClauses(text) {
   return String(text)
     .split(/然后|接着|之后|顺便|；|;|。|\n|，|,/)
@@ -311,14 +333,14 @@ export function parseClause(clause) {
   return null;
 }
 
-export function parse(text) {
+export function parse(text, options = {}) {
   const raw = String(text || '');
   const parts = splitClauses(raw);
   const clauses = [];
   for (const part of parts) {
     const prev = clauses[clauses.length - 1];
     // 拆出来的碎片如果单独识别不了，就并回上一句，避免"备注聚餐"这种补充信息丢失
-    if (!parseClause(part) && prev) {
+    if ((!parseClause(part) || isSupplement(part)) && prev) {
       clauses[clauses.length - 1] = `${prev}，${part}`;
       continue;
     }
@@ -328,6 +350,21 @@ export function parse(text) {
   const intents = [];
   const unknown = [];
   const missing = [];
+
+  // 有上下文时先看是不是续说（"再转 200""改成 500"）
+  if (options.last) {
+    const synthesized = resolveFollowUp(raw, options.last, cn2num);
+    if (synthesized) {
+      return {
+        text: raw,
+        intents: [synthesized],
+        unknown: [],
+        missing: [],
+        confidence: synthesized.confidence,
+        fromContext: true
+      };
+    }
+  }
 
   for (const clause of clauses) {
     const intent = parseClause(clause);

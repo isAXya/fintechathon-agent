@@ -56,10 +56,11 @@ export function createSeed(now = new Date()) {
     ],
     riskList: ['6222****9910'],
     subscriptions: [
-      { id: 'sub_video', name: '星光视频会员', amount: 25, cycle: '月', next: '11-02', cancelable: true },
-      { id: 'sub_cloud', name: '云盘存储', amount: 12, cycle: '月', next: '11-06', cancelable: true },
-      { id: 'sub_music', name: '网易云音乐', amount: 15, cycle: '月', next: '11-09', cancelable: true },
-      { id: 'sub_gym', name: '健身房年卡分期', amount: 199, cycle: '月', next: '11-14', cancelable: true }
+      { id: 'sub_video', name: '星光视频会员', amount: 25, prevAmount: 19, cycle: '月', next: '11-02', category: '影音', cancelable: true },
+      { id: 'sub_cloud', name: '云盘存储', amount: 12, cycle: '月', next: '11-06', category: '云存储', cancelable: true },
+      { id: 'sub_netdisk', name: '网盘会员', amount: 10, cycle: '月', next: '11-18', category: '云存储', cancelable: true },
+      { id: 'sub_music', name: '网易云音乐', amount: 15, cycle: '月', next: '11-09', category: '影音', cancelable: true },
+      { id: 'sub_gym', name: '健身房年卡分期', amount: 199, cycle: '月', next: '11-14', category: '健康', cancelable: true }
     ],
     products: [
       { id: 'p1', name: '朝朝盈货币A', risk: 'R1 低风险', yield: 1.842, min: 0.01, term: '随取随用', lock: 0 },
@@ -244,6 +245,85 @@ export function createBank(seed = createSeed()) {
         monthly: round2(monthly),
         yearly: round2(yearly),
         count: state.subscriptions.length
+      };
+    },
+
+    subscriptionInsight() {
+      const items = state.subscriptions.map((s) => ({ ...s }));
+      const changes = items
+        .filter((s) => Number.isFinite(s.prevAmount) && s.prevAmount !== s.amount)
+        .map((s) => ({
+          name: s.name,
+          from: s.prevAmount,
+          to: s.amount,
+          delta: round2(s.amount - s.prevAmount),
+          pct: Math.round(((s.amount - s.prevAmount) / s.prevAmount) * 1000) / 10,
+          next: s.next
+        }));
+
+      const bucket = {};
+      for (const s of items) {
+        if (!s.category) continue;
+        (bucket[s.category] = bucket[s.category] || []).push(s);
+      }
+      const duplicates = Object.entries(bucket)
+        .filter(([, list]) => list.length > 1)
+        .map(([category, list]) => ({
+          category,
+          items: list.map((s) => ({ name: s.name, amount: s.amount })),
+          monthly: round2(list.reduce((sum, s) => sum + s.amount, 0))
+        }));
+
+      const monthly = round2(items.reduce((sum, s) => sum + s.amount, 0));
+      return {
+        count: items.length,
+        monthly,
+        yearly: round2(monthly * 12),
+        changes,
+        duplicates,
+        savedIfMerged: round2(duplicates.reduce((sum, d) => sum + d.monthly - Math.min(...d.items.map((i) => i.amount)), 0))
+      };
+    },
+
+    budgetInsight(budget) {
+      const now = state.now;
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const rows = state.transactions.filter((t) => new Date(t.date) >= monthStart);
+      const spent = round2(rows.reduce((sum, t) => sum + t.amount, 0));
+      const limit = Number(budget) > 0 ? Number(budget) : 10000;
+      const day = now.getDate();
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const daysLeft = Math.max(1, daysInMonth - day + 1);
+      const remaining = round2(limit - spent);
+      const dailyAllowance = round2(remaining / daysLeft);
+      const projected = round2((spent / Math.max(1, day)) * daysInMonth);
+
+      const upcoming = [];
+      for (const s of state.subscriptions) {
+        const [mm, dd] = String(s.next).split('-').map(Number);
+        upcoming.push({ date: `${now.getFullYear()}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`, name: s.name, amount: s.amount, type: '订阅' });
+      }
+      for (const job of state.scheduled) {
+        if (job.type === 'gift') {
+          upcoming.push({ date: job.runAt, name: `礼品·${job.person}`, amount: job.amount, type: '预约' });
+        }
+      }
+      upcoming.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+      const upcomingTotal = round2(upcoming.reduce((sum, i) => sum + i.amount, 0));
+
+      return {
+        budget: limit,
+        spent,
+        remaining,
+        daysLeft,
+        dailyAllowance,
+        projected,
+        monthProgress: Math.round((day / daysInMonth) * 100),
+        spendProgress: limit ? Math.round((spent / limit) * 100) : 0,
+        top: this.analyzeBills('thisMonth').byCategory.slice(0, 3),
+        upcoming,
+        upcomingTotal,
+        status: remaining < 0 ? '超支' : projected > limit || dailyAllowance < 150 ? '偏紧' : '正常'
       };
     },
 

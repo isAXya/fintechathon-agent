@@ -18,6 +18,8 @@ export const ACTIONS = {
   'wealth.recommend': { label: '理财产品推荐', floor: 'green' },
   'wealth.assess': { label: '风险承受能力测评', floor: 'green' },
   'sub.scan': { label: '订阅扣费扫描', floor: 'green' },
+  'sub.insight': { label: '订阅异常检测', floor: 'green' },
+  'budget.insight': { label: '预算与可支配额度测算', floor: 'green' },
   'transfer.execute': { label: '转账', floor: 'yellow', reversible: true },
   'transfer.schedule': { label: '定时转账设置', floor: 'yellow', reversible: true },
   'transfer.collect': { label: 'AA 收款', floor: 'yellow' },
