@@ -575,4 +575,12 @@ function boot() {
   });
 }
 
+/* 深浅主题切换，选择存本地 */
+$('themeBtn').addEventListener('click', () => {
+  const root = document.documentElement;
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  try { localStorage.setItem('yuxing-theme', next); } catch (e) { /* 隐私模式下忽略 */ }
+});
+
 boot();

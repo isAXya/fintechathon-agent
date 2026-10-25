@@ -140,9 +140,8 @@ export function budgetCard(data) {
   legend1.appendChild(el('span', '', `剩余 ¥${money(data.remaining)}`));
   card.appendChild(legend1);
 
-  const meter2 = el('div', 'dual-meter');
+  const meter2 = el('div', 'dual-meter timeline');
   const fill2 = el('div', 'spent');
-  fill2.style.background = '#c9d3dd';
   fill2.style.width = `${Math.min(100, Math.max(2, data.monthProgress))}%`;
   meter2.appendChild(fill2);
   card.appendChild(meter2);
